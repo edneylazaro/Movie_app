@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MainStream Movie App</string>
+
+    <!-- Menu strings -->
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+
+    <!-- Main layout strings -->
+    <string name="search_hint">Name of the movie</string>
+</resources>
