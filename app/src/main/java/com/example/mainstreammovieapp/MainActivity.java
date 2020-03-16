@@ -1,16 +1,89 @@
 package com.example.mainstreammovieapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+
+import com.example.mainstreammovieapp.utilities.Movie;
+import com.example.mainstreammovieapp.utilities.MovieAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity  {
+
+    private static final String LOG_TAG = MovieAdapter.class.getName();
+    private RecyclerView recyclerView;
+    private MovieAdapter adapter;
+    private List<Movie> movieList;
+    ProgressDialog pd;
+    private SwipeRefreshLayout swipeContainer;
+
+    public Activity getActivity (){
+        Context context = this;
+        while (context instanceof ContextWrapper){
+            if(context instanceof Activity){
+                return(Activity) context;
+            }
+            context = ((ContextWrapper) ((ContextWrapper) context).getBaseContext());
+        }
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initViews();
+
+        swipeContainer = findViewById(R.id.action_settings);
+        swipeContainer.setColorSchemeResources(android.R.color.background_dark);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initViews();
+                Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void initViews(){
+        pd = new ProgressDialog(this);
+        pd.setMessage("Passing Movies...");
+        pd.setCancelable(false);
+        pd.show();
+
+        recyclerView = findViewById(R.id.recyclerview);
+
+        movieList = new ArrayList<>();
+        //adapter = new MovieAdapter(this, movieList);
+
+        if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            recyclerView.setLayoutManager((new GridLayoutManager(this, 2)));
+        }else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        }
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+       // recyclerView.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
+
+        loadJSON();
+    }
+    private void loadJSON(){
+     
     }
 
     @Override
