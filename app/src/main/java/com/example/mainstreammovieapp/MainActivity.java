@@ -78,16 +78,17 @@ public class MainActivity extends AppCompatActivity  {
         recyclerView = findViewById(R.id.recyclerview);
 
         movieList = new ArrayList<>();
-        //adapter = new MovieAdapter(this, movieList);
+        adapter = new MovieAdapter(this, movieList);
 
-        if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if(getActivity().getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT){
             recyclerView.setLayoutManager((new GridLayoutManager(this, 2)));
         }else {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-       // recyclerView.setAdapter(adapter);
-        //adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         loadJSON();
     }
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menu_settings:
+            case R.id.action_settings:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
