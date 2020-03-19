@@ -22,6 +22,8 @@ android {
     }
     buildTypes.each {
         it.buildConfigField 'String', 'MOVIE_DB_API_TOKEN', MovieDBApiToken
+        it.buildConfigField 'String', 'API_BASE_URL', ApiBaseURL
+        it.buildConfigField 'String', 'BASE_IMAGE_URL', BaseImageURL
     }
 
 }

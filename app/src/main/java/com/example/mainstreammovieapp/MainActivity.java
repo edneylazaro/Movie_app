@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -26,21 +28,42 @@ import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity{
 
     private static final String LOG_TAG = MovieAdapter.class.getName();
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private List<Movie> movieList;
     ProgressDialog pd;
-    private SwipeRefreshLayout swipeContainer;
 
+    ProgressBar mLoader;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+
+        mLoader = findViewById(R.id.loader);
+
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setHasFixedSize(true);
+
+        initViews();
+
+    }
     public Activity getActivity (){
         Context context = this;
         while (context instanceof ContextWrapper){
@@ -52,30 +75,11 @@ public class MainActivity extends AppCompatActivity  {
         return null;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initViews();
 
-        swipeContainer = findViewById(R.id.action_settings);
-        swipeContainer.setColorSchemeResources(android.R.color.background_dark);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                initViews();
-                Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private void initViews(){
-        pd = new ProgressDialog(this);
-        pd.setMessage("Passing Movies...");
-        pd.setCancelable(false);
-        pd.show();
 
-        recyclerView = findViewById(R.id.recyclerViewMain);
+        recyclerView = findViewById(R.id.recycler);
 
         movieList = new ArrayList<>();
         adapter = new MovieAdapter(this, movieList);
@@ -95,11 +99,6 @@ public class MainActivity extends AppCompatActivity  {
 
     private void loadJSON(){
         try {
-            if (BuildConfig.MOVIE_DB_API_TOKEN != null){
-                Toast.makeText(getApplicationContext(), "Please obtain API Key from themoviedb.org", Toast.LENGTH_LONG).show();
-                pd.dismiss();
-                return;
-            }
 
             Client client = new Client();
             Service apiService =
@@ -111,9 +110,7 @@ public class MainActivity extends AppCompatActivity  {
                     List<Movie> movies = response.body().getResults();
                     recyclerView.setAdapter(new MovieAdapter(getApplicationContext(), movies));
                     recyclerView.smoothScrollToPosition(0);
-                    if(swipeContainer.isRefreshing()){
-                        swipeContainer.setRefreshing(false);
-                    }
+
                     pd.dismiss();
                 }
 
@@ -145,4 +142,5 @@ public class MainActivity extends AppCompatActivity  {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

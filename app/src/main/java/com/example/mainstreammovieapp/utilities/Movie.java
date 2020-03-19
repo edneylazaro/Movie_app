@@ -1,5 +1,8 @@
 package com.example.mainstreammovieapp.utilities;
 
+import android.os.Parcelable;
+
+import com.example.mainstreammovieapp.BuildConfig;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -35,10 +38,12 @@ public class Movie {
         this.backdropPath = mBackdropPath;
     }
 
-    String baseImageUrl = "https://image.tmdb.org./t/p/w500";
+    public Movie(){}
+
+
 
     public String getPosterPath() {
-        return baseImageUrl + posterPath;
+        return BuildConfig.BASE_IMAGE_URL + posterPath;
     }
 
     public void setPosterPath(String posterPath) {

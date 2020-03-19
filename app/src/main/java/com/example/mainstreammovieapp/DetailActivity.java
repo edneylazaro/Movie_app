@@ -12,7 +12,7 @@ public class DetailActivity extends AppCompatActivity {
     TextView nameOfMovie, plotSynopsis, releaseDate;
     ImageView imageView;
 
-    @Override
+   /* @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
@@ -34,5 +34,5 @@ public class DetailActivity extends AppCompatActivity {
 
         }
 
-    }
+    }*/
 }
