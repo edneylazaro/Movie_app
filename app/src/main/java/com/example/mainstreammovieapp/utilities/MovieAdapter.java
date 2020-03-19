@@ -7,12 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.mainstreammovieapp.DetailActivity;
 import com.example.mainstreammovieapp.R;
 
@@ -56,7 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
         public MyViewHolder( View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.movie_title);
+            title = (TextView) itemView.findViewById(R.id.);
             thumbnail = (ImageView) itemView.findViewById(R.id.movie_thumbnail);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +70,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                         intent.putExtra("poster_path", movieList.get(position).getPosterPath());
                         intent.putExtra("release_date", movieList.get(position).getReleaseDate());
                         intent.putExtra("overview", movieList.get(position).getOverView());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        Toast.makeText(v.getContext(), "You Clicked " + clickedDataItem.getTitle(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
