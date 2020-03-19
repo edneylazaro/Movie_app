@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity  {
         pd.setCancelable(false);
         pd.show();
 
-        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerViewMain);
 
         movieList = new ArrayList<>();
         adapter = new MovieAdapter(this, movieList);

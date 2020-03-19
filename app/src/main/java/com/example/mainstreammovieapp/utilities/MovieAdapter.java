@@ -37,13 +37,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(final MovieAdapter.MyViewHolder holder, int position) {
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.ic_launcher_background);
 
         holder.title.setText(movieList.get(position).getTitle());
 
         Glide.with(mContext)
-                .setDefaultRequestOptions(requestOptions)
                 .load(movieList.get(position).getPosterPath()).into(holder.thumbnail);
 
     }
