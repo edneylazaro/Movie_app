@@ -74,10 +74,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                     if(position != RecyclerView.NO_POSITION){
                         Movie clickedDataItem = movieList.get(position);
                         Intent intent = new Intent(mContext, DetailActivity.class);
-                        intent.putExtra("title", movieList.get(position).getTitle());
-                        intent.putExtra("poster_path", movieList.get(position).getPosterPath());
-                        intent.putExtra("release_date", movieList.get(position).getReleaseDate());
-                        intent.putExtra("overview", movieList.get(position).getOverView());
+                        intent.putExtra("movies", clickedDataItem );
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
                         Toast.makeText(v.getContext(), "You Clicked " + clickedDataItem.getTitle(), Toast.LENGTH_SHORT).show();
