@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.mainstreammovieapp.BuildConfig;
 import com.example.mainstreammovieapp.DetailActivity;
 import com.example.mainstreammovieapp.R;
 
@@ -31,7 +30,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     @Override
     public MovieAdapter.MyViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.movie_card, viewGroup, false);
+                .inflate(R.layout.main_card, viewGroup, false);
 
         return new MyViewHolder(view);
     }

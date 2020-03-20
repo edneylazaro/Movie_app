@@ -58,9 +58,6 @@ public class Movie {
         this.voteAverage = voteAverage;
     }
 
-    Movie (){
-
-    }
 
     public String getPosterPath() {
         return BuildConfig.BASE_IMAGE_URL + posterPath;

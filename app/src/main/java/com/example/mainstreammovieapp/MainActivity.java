@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity{
 
         if(getActivity().getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_PORTRAIT){
-            recyclerView.setLayoutManager((new GridLayoutManager(this, 1)));
+            recyclerView.setLayoutManager((new GridLayoutManager(this, 2)));
         }else {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
