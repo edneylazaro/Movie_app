@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.mainstreammovieapp.BuildConfig;
 import com.example.mainstreammovieapp.DetailActivity;
 import com.example.mainstreammovieapp.R;
 
@@ -27,21 +27,29 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
        this.mContext = context;
        this.movieList = list;
    }
-    @NonNull
+
     @Override
-    public MovieAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public MovieAdapter.MyViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext())
-        .inflate(R.layout.activity_main, viewGroup, false);
-       return new MyViewHolder(view);
+                .inflate(R.layout.movie_card, viewGroup, false);
+
+        return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final MovieAdapter.MyViewHolder holder, int position) {
 
         holder.title.setText(movieList.get(position).getTitle());
+        String vote = Double.toString(movieList.get(position).getVoteAverage());
+        holder.userRating.setText(vote);
+
+        String poster = movieList.get(position).getPosterPath();
 
         Glide.with(mContext)
-                .load(movieList.get(position).getPosterPath()).into(holder.thumbnail);
+                .load(poster)
+                .apply(new RequestOptions()
+                .placeholder(R.mipmap.ic_launcher))
+                .into(holder.thumbnail);
 
     }
 

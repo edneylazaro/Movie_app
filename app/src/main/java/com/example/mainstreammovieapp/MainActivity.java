@@ -41,9 +41,8 @@ public class MainActivity extends AppCompatActivity{
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private List<Movie> movieList;
-    ProgressDialog pd;
+    private SwipeRefreshLayout swipeContainer;
 
-    ProgressBar mLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +50,6 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
-
-        mLoader = findViewById(R.id.loader);
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -75,8 +72,6 @@ public class MainActivity extends AppCompatActivity{
         return null;
     }
 
-
-
     private void initViews(){
 
         recyclerView = findViewById(R.id.recycler);
@@ -86,13 +81,23 @@ public class MainActivity extends AppCompatActivity{
 
         if(getActivity().getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_PORTRAIT){
-            recyclerView.setLayoutManager((new GridLayoutManager(this, 2)));
+            recyclerView.setLayoutManager((new GridLayoutManager(this, 1)));
         }else {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.content_main);
+        swipeContainer.setColorSchemeResources(android.R.color.holo_orange_dark);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh(){
+                initViews();
+                Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         loadJSON();
     }
@@ -110,8 +115,6 @@ public class MainActivity extends AppCompatActivity{
                     List<Movie> movies = response.body().getResults();
                     recyclerView.setAdapter(new MovieAdapter(getApplicationContext(), movies));
                     recyclerView.smoothScrollToPosition(0);
-
-                    pd.dismiss();
                 }
 
                 @Override
