@@ -1,12 +1,13 @@
 <resources>
-    <string name="app_name">MainStream Movie App</string>
+    <string name="app_name">Main Stream Movie App</string>
 
-    <!-- Menu strings -->
     <string name="search">Search</string>
     <string name="settings">Settings</string>
-
-    <!-- Main layout strings -->
-    <string name="search_hint">Name of the movie</string>
-
-    <string name="add_to_favorites">Add To Favorites</string>
+    <string name="movie_details">Movie Details</string>
+    <string name="pref_sort_order_label">Sort Order</string>
+    <string name="pref_sort_order_key">sortOrder</string>
+    <string name="pref_most_popular">Most Popular</string>
+    <string name="pref_highest_rated">Highest Rated</string>
+    <string name="trailer">Trailer</string>
+    <string name="favorite" translatable="false">Favorite Movies</string>
 </resources>

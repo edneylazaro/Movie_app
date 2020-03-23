@@ -6,14 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    tools:context="com.example.mainstreammovieapp.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.example.mainstreammovieapp.MainActivity">
 
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/recycler"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:scrollbars="vertical"
-    android:layout_marginTop="16dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 </RelativeLayout>

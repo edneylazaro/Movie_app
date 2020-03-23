@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.mainstreammovieapp.Api.Client;
 import com.example.mainstreammovieapp.Api.Service;
+import com.example.mainstreammovieapp.DB.FavoriteDataBase;
 import com.example.mainstreammovieapp.utilities.Movie;
 import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity{
     private MovieAdapter adapter;
     private List<Movie> movieList;
     private SwipeRefreshLayout swipeContainer;
+    private FavoriteDataBase favoriteDataBase;
 
 
     @Override
@@ -84,11 +86,12 @@ public class MainActivity extends AppCompatActivity{
                 Configuration.ORIENTATION_PORTRAIT){
             recyclerView.setLayoutManager((new GridLayoutManager(this, 2)));
         }else {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.content_main);
         swipeContainer.setColorSchemeResources(android.R.color.holo_orange_dark);
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity{
                 Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
             }
         });
+        swipeContainer.setRefreshing(false);
 
         loadJSON();
     }
