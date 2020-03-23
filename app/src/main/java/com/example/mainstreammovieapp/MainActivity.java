@@ -2,18 +2,22 @@ package com.example.mainstreammovieapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -37,14 +41,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MovieAdapter.class.getName();
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
-    private List<Movie> movieList;
+    private List<Movie> movieList  = new ArrayList<>();
     private SwipeRefreshLayout swipeContainer;
-    private FavoriteDataBase favoriteDataBase;
+    private FavoriteDataBase favoriteDataBase = new FavoriteDataBase(this);
 
 
     @Override
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity{
         });
         swipeContainer.setRefreshing(false);
 
-        loadJSON();
+        checkSortOrder();
     }
 
     private void loadJSON(){
@@ -137,6 +141,44 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    private void sortedByFavorite(){
+        recyclerView = findViewById(R.id.recycler);
+
+        movieList = new ArrayList<>();
+        adapter = new MovieAdapter(this, movieList);
+
+        if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        }
+
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        getAllFavorite();
+    }
+
+
+
+    private void getAllFavorite(){
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                movieList.clear();
+                movieList.addAll(favoriteDataBase.getAllFavorite());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,12 +188,45 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_settings:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+       if(id == R.id.action_settings){
+           Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+           startActivity(startSettingsActivity);
+           return true;
+        }
+
+       return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(LOG_TAG, "Preferences updated");
+        checkSortOrder();
+    }
+
+    private void checkSortOrder(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String sortOrder = preferences.getString(
+                this.getString(R.string.pref_sort_order_key),
+                this.getString(R.string.pref_most_popular)
+        );
+        if(sortOrder.equals(this.getString(R.string.pref_most_popular))) {
+            Log.d(LOG_TAG, "Sorting by most popular");
+            loadJSON();
+        } else {
+            Log.d(LOG_TAG, "Sorting by favorites");
+            sortedByFavorite();
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(movieList.isEmpty()){
+            checkSortOrder();
+        } else{
+            checkSortOrder();
+        }
+    }
 }

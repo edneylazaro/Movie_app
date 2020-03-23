@@ -79,7 +79,7 @@ public class DetailActivity extends AppCompatActivity {
        movie = new Movie();
 
        Double rate = movie.getVoteAverage();
-
+       movie.setVoteAverage(rate);
        movie.setId(movie_id);
        movie.setOverView(synopsis);
        movie.setPosterPath(thumbnail);
