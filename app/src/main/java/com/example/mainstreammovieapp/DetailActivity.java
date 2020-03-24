@@ -20,7 +20,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView nameOfMovie, plotSynopsis;
     private ImageView imageView;
 
-    private Movie movie;
+    private Movie movie = new Movie();
     private String thumbnail, movieName, synopsis;
     private Double rating;
     private int movie_id;
@@ -66,7 +66,7 @@ public class DetailActivity extends AppCompatActivity {
                            editor.commit();
                            saveFavorite();
                        }else {
-                           int movie_id = getIntent().getExtras().getInt("id");
+                           movie_id = getIntent().getExtras().getInt("id");
                            favoriteDataBase = new FavoriteDataBase(DetailActivity.this);
                            favoriteDataBase.deleteFavorite(movie_id);
 
@@ -80,7 +80,6 @@ public class DetailActivity extends AppCompatActivity {
 
     public void saveFavorite(){
        favoriteDataBase = new FavoriteDataBase(this);
-       movie = new Movie();
 
        movie.setVoteAverage(rating);
        movie.setId(movie_id);

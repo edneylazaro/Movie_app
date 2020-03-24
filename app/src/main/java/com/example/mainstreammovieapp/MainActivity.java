@@ -5,13 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -22,7 +19,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -34,7 +30,6 @@ import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -57,11 +52,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
-
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-
-        recyclerView.setLayoutManager(layoutManager);
 
         recyclerView.setHasFixedSize(true);
 
@@ -111,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         checkSortOrder();
     }
 
-    private void loadJSON(){
+    private void loadPopularMovies(){
         try {
             if (BuildConfig.MOVIE_DB_API_TOKEN.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Please obtain your API Key from themoviedb.org", Toast.LENGTH_SHORT).show();
@@ -136,6 +126,36 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 }
             });
         }catch (Exception e){
+            Log.d("Error", e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadTopRatedMovies(){
+        try{
+            if(BuildConfig.MOVIE_DB_API_TOKEN.isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please obtain your API Key from themoviedb.org", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Client client = new Client();
+            Service apiService =
+                    client.getClient().create(Service.class);
+            Call<MoviesResponse> call = apiService.getTopRatedMovies(BuildConfig.MOVIE_DB_API_TOKEN);
+            call.enqueue(new Callback<MoviesResponse>() {
+                @Override
+                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                    List<Movie> movies = response.body().getResults();
+                    recyclerView.setAdapter(new MovieAdapter(getApplicationContext(), movies));
+                    recyclerView.smoothScrollToPosition(0);
+                }
+
+                @Override
+                public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                    Log.d("Error", t.getMessage());
+                    Toast.makeText(MainActivity.this, "Error Fetching Data!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e){
             Log.d("Error", e.getMessage());
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -213,10 +233,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         );
         if(sortOrder.equals(this.getString(R.string.pref_most_popular))) {
             Log.d(LOG_TAG, "Sorting by most popular");
-            loadJSON();
-        } else {
+            loadPopularMovies();
+        } else if(sortOrder.equals(this.getString(R.string.favorite))) {
             Log.d(LOG_TAG, "Sorting by favorites");
             sortedByFavorite();
+        } else {
+            Log.d(LOG_TAG, "Sorting by Top Rated Movies");
+            loadTopRatedMovies();
         }
     }
 
