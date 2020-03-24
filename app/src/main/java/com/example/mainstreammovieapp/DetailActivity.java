@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -15,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.mainstreammovieapp.DB.FavoriteDataBase;
 import com.example.mainstreammovieapp.utilities.Movie;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
+import com.google.android.material.snackbar.Snackbar;
 
 public class DetailActivity extends AppCompatActivity {
     private TextView nameOfMovie, plotSynopsis;
@@ -30,6 +30,7 @@ public class DetailActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_card);
+
         imageView = findViewById(R.id.iv_poster_MC);
         nameOfMovie = findViewById(R.id.tv_movie_name);
         plotSynopsis = findViewById(R.id.tv_synopsis);
@@ -42,9 +43,11 @@ public class DetailActivity extends AppCompatActivity {
             movieName = movie.getOriginalTitle();
             synopsis = movie.getOverView();
             rating = movie.getVoteAverage();
+            movie_id = movie.getId();
 
+           String poster = BuildConfig.BASE_IMAGE_URL + thumbnail;
 
-            Glide.with(this).load(thumbnail)
+            Glide.with(this).load(poster)
                     .apply(new RequestOptions()
                             .placeholder(R.mipmap.ic_launcher))
                     .into(imageView);
@@ -56,15 +59,22 @@ public class DetailActivity extends AppCompatActivity {
        MaterialFavoriteButton materialFavoriteButton =
                (MaterialFavoriteButton) findViewById(R.id.add_to_favorite);
 
+       SharedPreferences sharedPreferences =
+               PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
        materialFavoriteButton.setOnFavoriteChangeListener(
                new MaterialFavoriteButton.OnFavoriteChangeListener() {
+
+
                    @Override
                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
                        if (favorite){
                            SharedPreferences.Editor editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
                            editor.putBoolean("Favorite Added", true);
-                           editor.commit();
+                           editor.apply();
                            saveFavorite();
+                           Snackbar.make(buttonView, "Added to Favorite",
+                                   Snackbar.LENGTH_SHORT).show();
                        }else {
                            movie_id = getIntent().getExtras().getInt("id");
                            favoriteDataBase = new FavoriteDataBase(DetailActivity.this);
@@ -72,7 +82,9 @@ public class DetailActivity extends AppCompatActivity {
 
                            SharedPreferences.Editor editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
                            editor.putBoolean("Favorite Removed", true);
-                           editor.commit();
+                           editor.apply();
+                           Snackbar.make(buttonView, "Removed from Favorite",
+                                   Snackbar.LENGTH_SHORT).show();
                        }
                    }
                });
@@ -80,6 +92,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public void saveFavorite(){
        favoriteDataBase = new FavoriteDataBase(this);
+       thumbnail = movie.getPosterPath();
 
        movie.setVoteAverage(rating);
        movie.setId(movie_id);

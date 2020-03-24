@@ -30,6 +30,7 @@ import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -41,9 +42,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private static final String LOG_TAG = MovieAdapter.class.getName();
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
-    private List<Movie> movieList  = new ArrayList<>();
+    private List<Movie> movieList;
     private SwipeRefreshLayout swipeContainer;
-    private FavoriteDataBase favoriteDataBase = new FavoriteDataBase(this);
+    private FavoriteDataBase favoriteDataBase;
 
 
     @Override
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        favoriteDataBase = new FavoriteDataBase(this);
 
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.content_main);
@@ -96,8 +98,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
             }
         });
-        swipeContainer.setRefreshing(false);
-
         checkSortOrder();
     }
 
@@ -115,8 +115,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> movies = response.body().getResults();
+                    Collections.sort(movies, Movie.BY_NAME_ALPHABETICAL);
                     recyclerView.setAdapter(new MovieAdapter(getApplicationContext(), movies));
                     recyclerView.smoothScrollToPosition(0);
+                    if(swipeContainer.isRefreshing()){
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
 
                 @Override
@@ -147,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     List<Movie> movies = response.body().getResults();
                     recyclerView.setAdapter(new MovieAdapter(getApplicationContext(), movies));
                     recyclerView.smoothScrollToPosition(0);
+                    if(swipeContainer.isRefreshing()){
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
 
                 @Override
@@ -176,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        favoriteDataBase = new FavoriteDataBase(this);
 
         getAllFavorite();
     }
@@ -229,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String sortOrder = preferences.getString(
                 this.getString(R.string.pref_sort_order_key),
-                this.getString(R.string.pref_most_popular)
+                this.getString(R.string.favorite)
         );
         if(sortOrder.equals(this.getString(R.string.pref_most_popular))) {
             Log.d(LOG_TAG, "Sorting by most popular");

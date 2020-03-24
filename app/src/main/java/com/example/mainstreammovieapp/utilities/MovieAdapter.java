@@ -6,13 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.mainstreammovieapp.BuildConfig;
 import com.example.mainstreammovieapp.DetailActivity;
+import com.example.mainstreammovieapp.MainActivity;
 import com.example.mainstreammovieapp.R;
 
 import java.util.List;
@@ -38,11 +40,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(final MovieAdapter.MyViewHolder holder, int position) {
 
-        //holder.title.setText(movieList.get(position).getTitle());
-        //String vote = Double.toString(movieList.get(position).getVoteAverage());
-       // holder.userRating.setText(vote);
-
-        String poster = movieList.get(position).getPosterPath();
+       String poster = BuildConfig.BASE_IMAGE_URL + movieList.get(position).getPosterPath();
 
         Glide.with(mContext)
                 .load(poster)
@@ -51,7 +49,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                 .placeholder(R.mipmap.ic_launcher))
                 .apply(RequestOptions.overrideOf(1000, 1000))
                 .into(holder.thumbnail);
-
     }
 
     @Override
@@ -60,14 +57,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     }
 
     public class  MyViewHolder extends  RecyclerView.ViewHolder{
-        public TextView title, userRating;
         public ImageView thumbnail;
 
         public MyViewHolder( View itemView) {
             super(itemView);
-            //title = (TextView) itemView.findViewById(R.id.title);
+
             thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
-            //userRating = (TextView) itemView.findViewById(R.id.user_rating);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,7 +74,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                         intent.putExtra("movies", clickedDataItem );
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
-                        Toast.makeText(v.getContext(), "You Clicked " + clickedDataItem.getTitle(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(v.getContext(), "You Clicked " + clickedDataItem.getTitle(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

@@ -7,6 +7,7 @@ import com.example.mainstreammovieapp.BuildConfig;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Movie implements Parcelable {
@@ -64,7 +65,7 @@ public class Movie implements Parcelable {
     }
 
     public String getPosterPath() {
-        return BuildConfig.BASE_IMAGE_URL + posterPath;
+        return posterPath;
     }
 
     public void setPosterPath(String posterPath) {
@@ -174,7 +175,14 @@ public class Movie implements Parcelable {
     public void setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
     }
-    @Override
+
+    public static final Comparator<Movie> BY_NAME_ALPHABETICAL = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie movie, Movie t1) {
+
+            return movie.originalTitle.compareTo(t1.originalTitle);
+        }
+    };
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.posterPath);
