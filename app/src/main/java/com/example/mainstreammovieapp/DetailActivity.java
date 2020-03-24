@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -16,13 +17,14 @@ import com.example.mainstreammovieapp.utilities.Movie;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 
 public class DetailActivity extends AppCompatActivity {
-    TextView nameOfMovie, plotSynopsis;
-    ImageView imageView;
+    private TextView nameOfMovie, plotSynopsis;
+    private ImageView imageView;
 
-    Movie movie;
-    String thumbnail, movieName, synopsis, rating;
-    int movie_id;
-    FavoriteDataBase favoriteDataBase;
+    private Movie movie;
+    private String thumbnail, movieName, synopsis;
+    private Double rating;
+    private int movie_id;
+    private FavoriteDataBase favoriteDataBase;
 
    @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,9 +38,11 @@ public class DetailActivity extends AppCompatActivity {
         if(intent.hasExtra("movies")) {
 
             movie = getIntent().getParcelableExtra("movies");
-            String thumbnail = movie.getPosterPath();
-            String movieName = movie.getOriginalTitle();
-            String synopsis = movie.getOverView();
+            thumbnail = movie.getPosterPath();
+            movieName = movie.getOriginalTitle();
+            synopsis = movie.getOverView();
+            rating = movie.getVoteAverage();
+
 
             Glide.with(this).load(thumbnail)
                     .apply(new RequestOptions()
@@ -78,8 +82,7 @@ public class DetailActivity extends AppCompatActivity {
        favoriteDataBase = new FavoriteDataBase(this);
        movie = new Movie();
 
-       Double rate = movie.getVoteAverage();
-       movie.setVoteAverage(rate);
+       movie.setVoteAverage(rating);
        movie.setId(movie_id);
        movie.setOverView(synopsis);
        movie.setPosterPath(thumbnail);
