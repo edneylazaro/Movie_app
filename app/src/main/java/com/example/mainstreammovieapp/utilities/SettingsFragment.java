@@ -1,4 +1,4 @@
-package com.example.mainstreammovieapp;
+package com.example.mainstreammovieapp.utilities;
 
 
 import android.content.SharedPreferences;
@@ -9,6 +9,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+
+import com.example.mainstreammovieapp.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener {

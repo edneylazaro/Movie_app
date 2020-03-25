@@ -3,7 +3,6 @@ package com.example.mainstreammovieapp.utilities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.mainstreammovieapp.BuildConfig;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;

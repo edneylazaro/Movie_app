@@ -185,8 +185,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         favoriteDataBase = new FavoriteDataBase(this);
-
         getAllFavorite();
+        if(swipeContainer.isRefreshing()){
+            swipeContainer.setRefreshing(false);
+        }
     }
 
 
@@ -230,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(LOG_TAG, "Preferences updated");
         checkSortOrder();
     }
 
@@ -238,16 +239,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String sortOrder = preferences.getString(
                 this.getString(R.string.pref_sort_order_key),
-                this.getString(R.string.favorite)
+                this.getString(R.string.pref_most_popular)
         );
         if(sortOrder.equals(this.getString(R.string.pref_most_popular))) {
-            Log.d(LOG_TAG, "Sorting by most popular");
             loadPopularMovies();
         } else if(sortOrder.equals(this.getString(R.string.favorite))) {
-            Log.d(LOG_TAG, "Sorting by favorites");
             sortedByFavorite();
         } else {
-            Log.d(LOG_TAG, "Sorting by Top Rated Movies");
             loadTopRatedMovies();
         }
     }
