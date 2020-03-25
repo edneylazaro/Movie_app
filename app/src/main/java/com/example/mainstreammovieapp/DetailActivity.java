@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -25,6 +27,7 @@ public class DetailActivity extends AppCompatActivity {
     private Double rating;
     private int movie_id;
     private FavoriteDataBase favoriteDataBase;
+    private boolean myBoolean = false;
 
    @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,8 +71,9 @@ public class DetailActivity extends AppCompatActivity {
 
                    @Override
                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+                       SharedPreferences.Editor editor;
                        if (favorite){
-                           SharedPreferences.Editor editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
+                           editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
                            editor.putBoolean("Favorite Added", true);
                            editor.apply();
                            saveFavorite();
@@ -79,8 +83,8 @@ public class DetailActivity extends AppCompatActivity {
                            movie_id = getIntent().getExtras().getInt("id");
                            favoriteDataBase = new FavoriteDataBase(DetailActivity.this);
                            favoriteDataBase.deleteFavorite(movie_id);
-
-                           SharedPreferences.Editor editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
+                           
+                           editor = getSharedPreferences("com.example.mainstreammovieapp.DetailActivity", MODE_PRIVATE).edit();
                            editor.putBoolean("Favorite Removed", true);
                            editor.apply();
                            Snackbar.make(buttonView, "Removed from Favorite",
@@ -101,5 +105,11 @@ public class DetailActivity extends AppCompatActivity {
        movie.setOriginalTitle(movieName);
 
        favoriteDataBase.addFavorite(movie);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 }

@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mainstreammovieapp.BuildConfig;
 import com.example.mainstreammovieapp.DetailActivity;
-import com.example.mainstreammovieapp.MainActivity;
 import com.example.mainstreammovieapp.R;
 
 import java.util.List;
@@ -29,6 +28,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
        this.movieList = list;
    }
 
+
+
     @Override
     public MovieAdapter.MyViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
         View view = LayoutInflater.from(viewGroup.getContext())
@@ -42,7 +43,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
        String poster = BuildConfig.BASE_IMAGE_URL + movieList.get(position).getPosterPath();
 
-        Glide.with(mContext)
+       Glide.with(mContext)
                 .load(poster)
                 .centerCrop()
                 .apply(new RequestOptions()

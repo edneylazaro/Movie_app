@@ -28,6 +28,7 @@ import com.example.mainstreammovieapp.DB.FavoriteDataBase;
 import com.example.mainstreammovieapp.utilities.Movie;
 import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -260,4 +261,5 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             checkSortOrder();
         }
     }
+
 }

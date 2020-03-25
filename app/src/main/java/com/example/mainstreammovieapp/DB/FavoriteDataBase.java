@@ -41,7 +41,7 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase){
       final String SQL_CREATE_FAVORITE_TABLE = "CREATE TABLE " + FavoriteContract.FavoriteEntry.TABLE_NAME + " (" +
               FavoriteContract.FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-              FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " INTEGER, " +
+              FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE, " +
               FavoriteContract.FavoriteEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
               FavoriteContract.FavoriteEntry.COLUMN_USER_RATING + " REAL NOT NULL, " +
               FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
@@ -75,6 +75,7 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
         db.delete(FavoriteContract.FavoriteEntry.TABLE_NAME,
                 FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + "=" + id, null);
     }
+
     public List<Movie> getAllFavorite(){
         String[] columns = {
                 FavoriteContract.FavoriteEntry._ID,
