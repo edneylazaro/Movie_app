@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.example.mainstreammovieapp.DetailActivity;
 import com.example.mainstreammovieapp.utilities.Movie;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +42,7 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase){
       final String SQL_CREATE_FAVORITE_TABLE = "CREATE TABLE " + FavoriteContract.FavoriteEntry.TABLE_NAME + " (" +
               FavoriteContract.FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-              FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE, " +
+              FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
               FavoriteContract.FavoriteEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
               FavoriteContract.FavoriteEntry.COLUMN_USER_RATING + " REAL NOT NULL, " +
               FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
@@ -54,7 +57,28 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public boolean checkFav(String movieId){
+        boolean myBool = false;
+        try {
+            Cursor c = db.rawQuery("SELECT * FROM " + FavoriteContract.FavoriteEntry.COLUMN_TITLE + " WhERE "
+                    + FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " like ? ", new String[]{"%" + movieId + "%"});
+            if(c.moveToFirst()){
+                do{
+                    if(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID.equals(movieId)){
+                         myBool = true;
+                    } else {
+                        myBool = false;
+                    }
+                } while (c.moveToNext());
+            }
+        }catch (Exception e){
+            movieId = null;
+        }
+        return  myBool;
+    }
+
     public void addFavorite( Movie movie){
+        boolean myBool;
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -63,9 +87,14 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
         values.put(FavoriteContract.FavoriteEntry.COLUMN_USER_RATING, movie.getVoteAverage());
         values.put(FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
         values.put(FavoriteContract.FavoriteEntry.COLUMN_PLOT_SYNOPSIS, movie.getOverView());
+        myBool = checkFav(values.getAsString(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID));
+        if(!(myBool)){
+            db.insert(FavoriteContract.FavoriteEntry.TABLE_NAME, null, values);
+            db.close();
+        } else {
+            db.close();
+        }
 
-        db.insert(FavoriteContract.FavoriteEntry.TABLE_NAME, null, values);
-        db.close();
     }
 
     public void deleteFavorite(int id){

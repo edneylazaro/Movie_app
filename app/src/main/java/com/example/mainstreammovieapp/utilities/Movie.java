@@ -62,6 +62,10 @@ public class Movie implements Parcelable {
     public Movie(){
 
     }
+    public  String idToString(int id){
+        String idString = Integer.toString(id);
+        return idString;
+    }
 
     public String getPosterPath() {
         return posterPath;

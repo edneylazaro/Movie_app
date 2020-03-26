@@ -8,4 +8,6 @@
     <string name="pref_highest_rated">Highest Rated</string>
     <string name="trailer">Trailer</string>
     <string name="favorite" translatable="false">Favorite Movies</string>
+    <string name="add_to_fav">Add to Favorites</string>
+    <string name="removed_from_fav">Removed from Favorites</string>
 </resources>
