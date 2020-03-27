@@ -1,10 +1,8 @@
 package com.example.mainstreammovieapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,67 +21,65 @@ import com.google.android.material.snackbar.Snackbar;
 public class DetailActivity extends AppCompatActivity {
     private TextView nameOfMovie, plotSynopsis;
     private ImageView imageView;
-    private ToggleButton toggleButton;
 
     private Movie movie = new Movie();
     private String thumbnail, movieName, synopsis;
     private Double rating;
     private int movie_id;
     private FavoriteDataBase favoriteDataBase = new FavoriteDataBase(this);
-    private boolean myBool =false;
-
+    private boolean myBool;
+    private MaterialFavoriteButton materialFavoriteButton;
+    SharedPreferences preferences;
 
    @Override
     public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.movie_card);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.movie_card);
+       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        imageView = findViewById(R.id.iv_poster_MC);
-        nameOfMovie = findViewById(R.id.tv_movie_name);
-        plotSynopsis = findViewById(R.id.tv_synopsis);
-        Intent intent = getIntent();
-        if(intent.hasExtra("movies")) {
+       imageView = findViewById(R.id.iv_poster_MC);
+       nameOfMovie = findViewById(R.id.tv_movie_name);
+       plotSynopsis = findViewById(R.id.tv_synopsis);
+       Intent intent = getIntent();
+       if (intent.hasExtra("movies")) {
 
-            movie = getIntent().getParcelableExtra("movies");
-            thumbnail = movie.getPosterPath();
-            movieName = movie.getOriginalTitle();
-            myBool = favoriteDataBase.checkFav(movie.idToString(movie.getId()));
-            synopsis = movie.getOverView();
-            rating = movie.getVoteAverage();
-            movie_id = movie.getId();
+           movie = getIntent().getParcelableExtra("movies");
+           thumbnail = movie.getPosterPath();
+           movieName = movie.getOriginalTitle();
+           myBool = favoriteDataBase.checkFav(movie.idToString(movie.getId()));
+           synopsis = movie.getOverView();
+           rating = movie.getVoteAverage();
+           movie_id = movie.getId();
 
            String poster = BuildConfig.BASE_IMAGE_URL + thumbnail;
 
-            Glide.with(this).load(poster)
-                    .apply(new RequestOptions()
-                            .placeholder(R.mipmap.ic_launcher))
-                    .into(imageView);
-            nameOfMovie.setText(movieName);
-            plotSynopsis.setText(synopsis);
-        }else {
-            Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
-        }
-
-        final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-       MaterialFavoriteButton materialFavoriteButton =
-               (MaterialFavoriteButton) findViewById(R.id.add_to_favorite);
-
-       if(materialFavoriteButton.isFavorite() == myBool){
-           materialFavoriteButton.setAnimateFavorite(true);
-       }else {
-           materialFavoriteButton.setAnimateFavorite(true);
+           Glide.with(this).load(poster)
+                   .apply(new RequestOptions()
+                           .placeholder(R.mipmap.ic_launcher))
+                   .into(imageView);
+           nameOfMovie.setText(movieName);
+           plotSynopsis.setText(synopsis);
+       } else {
+           Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
        }
 
+       materialFavoriteButton = (MaterialFavoriteButton) findViewById(R.id.add_to_favorite);
 
-       materialFavoriteButton.setOnFavoriteChangeListener(
+       preferences = PreferenceManager.getDefaultSharedPreferences(this);
+       final SharedPreferences.Editor editor = preferences.edit();
+       if(preferences.contains("checked") && preferences.getBoolean("Favorite Added", false) == true
+               && preferences.getInt("id", movie_id) == movie_id){
+           materialFavoriteButton.setFavorite(true);
+       } else {
+           materialFavoriteButton.setFavorite(false);
+       }
+
+        materialFavoriteButton.setOnFavoriteChangeListener(
                new MaterialFavoriteButton.OnFavoriteChangeListener() {
                    @Override
                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
-                       SharedPreferences.Editor editor = preferences.edit();
                        if (favorite){
+                           editor.putInt("id",movie_id);
                            editor.putBoolean("Favorite Added", true);
                            editor.apply();
                            saveFavorite();
@@ -94,18 +90,16 @@ public class DetailActivity extends AppCompatActivity {
                            favoriteDataBase = new FavoriteDataBase(DetailActivity.this);
                            favoriteDataBase.deleteFavorite(movie_id);
 
+                           editor.putInt("id",movie_id);
                            editor.putBoolean("Favorite Added", false);
-                           editor.commit();
+                           editor.apply();
                            Snackbar.make(buttonView, "Removed from Favorite",
                                    Snackbar.LENGTH_SHORT).show();
                        }
 
                    }
                });
-       Intent intentButtonState = new Intent(this, MainActivity.class);
-       intentButtonState.putExtra("ButtonState",myBool);
     }
-
     public void saveFavorite(){
        favoriteDataBase = new FavoriteDataBase(this);
        thumbnail = movie.getPosterPath();
