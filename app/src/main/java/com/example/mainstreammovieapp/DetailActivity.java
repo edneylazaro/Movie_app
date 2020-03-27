@@ -67,7 +67,7 @@ public class DetailActivity extends AppCompatActivity {
 
        preferences = PreferenceManager.getDefaultSharedPreferences(this);
        final SharedPreferences.Editor editor = preferences.edit();
-       if(preferences.contains("checked") && preferences.getBoolean("Favorite Added", false) == true
+       if(preferences.contains("Favorite Added") && preferences.getBoolean("Favorite Added", false) == true
                && preferences.getInt("id", movie_id) == movie_id){
            materialFavoriteButton.setFavorite(true);
        } else {
