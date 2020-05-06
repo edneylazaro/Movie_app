@@ -57,25 +57,6 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean checkFav(String movieId){
-        boolean myBool = false;
-        try {
-            Cursor c = db.rawQuery("SELECT * FROM " + FavoriteContract.FavoriteEntry.COLUMN_TITLE + " WhERE "
-                    + FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + " like ? ", new String[]{"%" + movieId + "%"});
-            if(c.moveToFirst()){
-                do{
-                    if(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID.equals(movieId)){
-                         myBool = true;
-                    } else {
-                        myBool = false;
-                    }
-                } while (c.moveToNext());
-            }
-        }catch (Exception e){
-            movieId = null;
-        }
-        return  myBool;
-    }
 
     public void addFavorite( Movie movie){
         boolean myBool;
@@ -87,13 +68,9 @@ public class FavoriteDataBase extends SQLiteOpenHelper {
         values.put(FavoriteContract.FavoriteEntry.COLUMN_USER_RATING, movie.getVoteAverage());
         values.put(FavoriteContract.FavoriteEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
         values.put(FavoriteContract.FavoriteEntry.COLUMN_PLOT_SYNOPSIS, movie.getOverView());
-        myBool = checkFav(values.getAsString(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID));
-        if(!(myBool)){
-            db.insert(FavoriteContract.FavoriteEntry.TABLE_NAME, null, values);
-            db.close();
-        } else {
-            db.close();
-        }
+
+        db.insert(FavoriteContract.FavoriteEntry.TABLE_NAME, null, values);
+        db.close();
 
     }
 

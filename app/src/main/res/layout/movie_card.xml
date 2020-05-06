@@ -49,12 +49,16 @@
 
         <com.github.ivbaranov.mfb.MaterialFavoriteButton
             android:id="@+id/add_to_favorite"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintLeft_toLeftOf="@+id/tv_synopsis"
             app:layout_constraintRight_toRightOf="@+id/tv_synopsis"
             app:layout_constraintTop_toBottomOf="@+id/tv_synopsis"
-            android:background="@color/colorAccent"/>
+            app:layout_constraintVertical_bias="0.593" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

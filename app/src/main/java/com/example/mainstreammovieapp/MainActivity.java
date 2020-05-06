@@ -7,20 +7,20 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
-
 
 import com.example.mainstreammovieapp.Api.Client;
 import com.example.mainstreammovieapp.Api.Service;
@@ -28,7 +28,6 @@ import com.example.mainstreammovieapp.DB.FavoriteDataBase;
 import com.example.mainstreammovieapp.utilities.Movie;
 import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
-import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MovieAdapter.class.getName();
+    private EditText editText;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private List<Movie> movieList;
@@ -54,10 +54,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
-
         recyclerView.setHasFixedSize(true);
 
         initViews();
+
+    }
+
+    private void getMovieByName(){
+        Client client = new Client();
 
     }
     public Activity getActivity (){
@@ -72,8 +76,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void initViews(){
-
-        recyclerView = findViewById(R.id.recycler);
 
         movieList = new ArrayList<>();
         adapter = new MovieAdapter(this, movieList);
@@ -191,8 +193,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-
-
     private void getAllFavorite(){
         new AsyncTask<Void, Void, Void>(){
 
@@ -225,10 +225,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
            startActivity(startSettingsActivity);
            return true;
         }
+       if(id == R.id.action_search){
+           String message = "Search Clicked";
+           Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+       }
 
        return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
