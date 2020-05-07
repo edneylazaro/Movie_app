@@ -1,7 +1,5 @@
 package com.example.mainstreammovieapp.Api;
 
-import android.content.Intent;
-
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
 import retrofit2.Call;
@@ -15,7 +13,4 @@ public interface Service {
 
     @GET("movie/top_rated")
     Call<MoviesResponse> getTopRatedMovies(@Query("api_key") String apiKey);
-
-    @GET()
-    Call<MoviesResponse> getMovieByName(@Query("api_key") String apiKey);
 }

@@ -14,12 +14,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mainstreammovieapp.Api.Client;
@@ -29,24 +30,29 @@ import com.example.mainstreammovieapp.utilities.Movie;
 import com.example.mainstreammovieapp.utilities.MovieAdapter;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String LOG_TAG = MovieAdapter.class.getName();
-    private EditText editText;
     private RecyclerView recyclerView;
     private MovieAdapter adapter;
     private List<Movie> movieList;
     private SwipeRefreshLayout swipeContainer;
     private FavoriteDataBase favoriteDataBase;
-
+    int cacheSize = 10 * 1024 * 1024;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +66,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     }
 
-    private void getMovieByName(){
-        Client client = new Client();
-
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
     public Activity getActivity (){
         Context context = this;
@@ -110,9 +118,33 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 Toast.makeText(getApplicationContext(), "Please obtain your API Key from themoviedb.org", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Client client = new Client();
+            Cache cache = new Cache(getCacheDir(), cacheSize);
+
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .cache(cache)
+                    .addInterceptor(new Interceptor() {
+                        @Override
+                        public okhttp3.Response intercept(Chain chain)
+                                throws IOException {
+                            Request request = chain.request();
+                            if(!isNetworkAvailable()){
+                                int maxStale = 60 * 60 * 24 * 28;
+                                request = request.newBuilder()
+                                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                                        .build();
+                            }
+                            return chain.proceed(request);
+                        }
+                    }).build();
+            Retrofit.Builder builder = new Retrofit.Builder()
+                    .baseUrl(BuildConfig.API_BASE_URL)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create());
+            Retrofit retrofit = builder.build();
+
             Service apiService =
-                    client.getClient().create(Service.class);
+                    retrofit.create(Service.class);
+
             Call<MoviesResponse> call = apiService.getPopularMovies(BuildConfig.MOVIE_DB_API_TOKEN);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
@@ -144,9 +176,33 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 Toast.makeText(getApplicationContext(), "Please obtain your API Key from themoviedb.org", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Client client = new Client();
+            Cache cache = new Cache(getCacheDir(), cacheSize);
+
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .cache(cache)
+                    .addInterceptor(new Interceptor() {
+                        @Override
+                        public okhttp3.Response intercept(Chain chain)
+                                throws IOException {
+                            Request request = chain.request();
+                            if(!isNetworkAvailable()){
+                                int maxStale = 60 * 60 * 24 * 28;
+                                request = request.newBuilder()
+                                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                                        .build();
+                            }
+                            return chain.proceed(request);
+                        }
+                    }).build();
+            Retrofit.Builder builder = new Retrofit.Builder()
+                    .baseUrl(BuildConfig.API_BASE_URL)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create());
+
+            Retrofit retrofit = builder.build();
+
             Service apiService =
-                    client.getClient().create(Service.class);
+                    retrofit.create(Service.class);
             Call<MoviesResponse> call = apiService.getTopRatedMovies(BuildConfig.MOVIE_DB_API_TOKEN);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override

@@ -11,5 +11,6 @@
     <string name="its_fav">Favorite</string>
     <string name="not_fav">Not Favorite</string>
     <string name="search">Search</string>
+    <string name="hint">Type The name of the Movie</string>
 
 </resources>

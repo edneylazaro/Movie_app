@@ -19,7 +19,7 @@ import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class DetailActivity extends AppCompatActivity {
-    private TextView nameOfMovie, plotSynopsis, itsFav;
+    private TextView nameOfMovie, plotSynopsis;
     private ImageView imageView;
 
     private Movie movie = new Movie();
