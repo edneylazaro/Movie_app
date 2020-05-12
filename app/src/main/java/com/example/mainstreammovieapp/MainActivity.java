@@ -2,12 +2,15 @@ package com.example.mainstreammovieapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -23,11 +26,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.mainstreammovieapp.Api.Client;
 import com.example.mainstreammovieapp.Api.Service;
 import com.example.mainstreammovieapp.DB.FavoriteDataBase;
 import com.example.mainstreammovieapp.utilities.Movie;
 import com.example.mainstreammovieapp.utilities.MovieAdapter;
+import com.example.mainstreammovieapp.utilities.MovieAdapterListener;
 import com.example.mainstreammovieapp.utilities.MoviesResponse;
 
 import java.io.IOException;
@@ -48,7 +51,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private RecyclerView recyclerView;
-    private MovieAdapter adapter;
+    private  RecyclerView.LayoutManager layoutManager;
+    private SearchView searchView;
+    private MovieAdapter mAdapter;
     private List<Movie> movieList;
     private SwipeRefreshLayout swipeContainer;
     private FavoriteDataBase favoriteDataBase;
@@ -60,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        layoutManager = new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         initViews();
 
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private void initViews(){
 
         movieList = new ArrayList<>();
-        adapter = new MovieAdapter(this, movieList);
+        mAdapter = new MovieAdapter(this, movieList);
 
         if(getActivity().getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_PORTRAIT){
@@ -95,9 +102,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
         favoriteDataBase = new FavoriteDataBase(this);
+
 
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.content_main);
@@ -231,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         recyclerView = findViewById(R.id.recycler);
 
         movieList = new ArrayList<>();
-        adapter = new MovieAdapter(this, movieList);
+        mAdapter = new MovieAdapter(this, movieList);
 
         if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -240,8 +248,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
         favoriteDataBase = new FavoriteDataBase(this);
         getAllFavorite();
         if(swipeContainer.isRefreshing()){
@@ -262,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
             }
         }.execute();
     }
@@ -270,6 +278,28 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        assert searchManager != null;
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mAdapter.getFilter().filter(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -282,11 +312,19 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
            return true;
         }
        if(id == R.id.action_search){
-           String message = "Search Clicked";
-           Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+           return true;
        }
 
        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!searchView.isIconified()){
+            searchView.setIconified(true);
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override

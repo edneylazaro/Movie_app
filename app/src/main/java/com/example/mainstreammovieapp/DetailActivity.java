@@ -30,9 +30,8 @@ public class DetailActivity extends AppCompatActivity {
     private MaterialFavoriteButton materialFavoriteButton;
     private SQLiteDatabase mDb;
 
-
    @Override
-    public void onCreate(final Bundle savedInstanceState) {
+   public void onCreate(final Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        setContentView(R.layout.movie_card);
        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -109,7 +108,7 @@ public class DetailActivity extends AppCompatActivity {
        }
    }
 
-       public boolean search(String searchItem){
+   public boolean search(String searchItem){
            String[] projection = {
                    FavoriteContract.FavoriteEntry._ID,
                    FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID,
@@ -127,7 +126,8 @@ public class DetailActivity extends AppCompatActivity {
            cursor.close();
            return exists;
        }
-    public void saveFavorite(){
+
+   public void saveFavorite(){
        favoriteDataBase = new FavoriteDataBase(this);
        thumbnail = movie.getPosterPath();
 
@@ -138,6 +138,6 @@ public class DetailActivity extends AppCompatActivity {
        movie.setOriginalTitle(movieName);
 
        favoriteDataBase.addFavorite(movie);
-    }
+   }
 
 }

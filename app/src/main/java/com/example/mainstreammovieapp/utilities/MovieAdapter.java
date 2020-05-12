@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,19 +17,21 @@ import com.example.mainstreammovieapp.BuildConfig;
 import com.example.mainstreammovieapp.DetailActivity;
 import com.example.mainstreammovieapp.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder>
+        implements Filterable {
 
     private Context mContext;
     private List<Movie> movieList;
+    private List<Movie> movieListFiltered;
 
-   public MovieAdapter(Context context, List<Movie> list){
+    public MovieAdapter(Context context, List<Movie> list){
        this.mContext = context;
        this.movieList = list;
+       this.movieListFiltered = movieList;
    }
-
-
 
     @Override
     public MovieAdapter.MyViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
@@ -52,7 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return movieListFiltered.size();
     }
 
     public class  MyViewHolder extends  RecyclerView.ViewHolder{
@@ -77,5 +81,35 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
                 }
             });
         }
+    }
+    @Override
+    public Filter getFilter(){
+       return  new Filter() {
+           @Override
+           protected FilterResults performFiltering(CharSequence constraint) {
+               String charString = constraint.toString();
+               if(charString.isEmpty()){
+                    movieListFiltered = movieList;
+               } else {
+                   List<Movie> filteredList = new ArrayList<>();
+                   for(Movie row : movieList) {
+                       if(row.getOriginalTitle().toLowerCase().contains(charString.toLowerCase())) {
+                           filteredList.add(row);
+                       }
+                   }
+                   movieListFiltered = filteredList;
+               }
+               FilterResults filterResults = new FilterResults();
+               filterResults.values = movieListFiltered;
+               return filterResults;
+           }
+
+           @Override
+           protected void publishResults(CharSequence constraint, FilterResults results) {
+               movieListFiltered = (ArrayList<Movie>) results.values;
+               notifyDataSetChanged();
+
+           }
+       };
     }
 }
