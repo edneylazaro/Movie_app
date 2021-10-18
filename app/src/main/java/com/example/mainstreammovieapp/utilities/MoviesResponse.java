@@ -26,7 +26,7 @@ public class MoviesResponse implements Parcelable {
     }
 
     public List<Movie> getResults() {
-        return results;
+            return results;
     }
 
     public void setResults(List<Movie> results) {
